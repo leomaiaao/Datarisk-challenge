@@ -85,7 +85,7 @@ resource "azurerm_lb_rule" "lbnatrule" {
    probe_id                       = azurerm_lb_probe.DatariskVM.id
 }
 
-resource "azurerm_virtual_machine_scale_set" "DatariskVM" {
+resource "azurerm_linux_virtual_machine_scale_set" "DatariskVM" {
  name                = "vmscaleset"
  location            = var.location
  resource_group_name = azurerm_resource_group.DatariskVM.name

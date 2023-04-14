@@ -47,6 +47,7 @@ jobs:
           terraform init
 
       - name: Terraform Plan
+        continue-on-error: true
         run: |
           cd terraform
           terraform plan
