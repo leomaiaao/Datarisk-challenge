@@ -8,8 +8,6 @@ on:
       - '**/README.md'
   workflow_dispatch:
 
-env:
-
 jobs:
   test:
     name: Test
@@ -31,7 +29,7 @@ jobs:
         uses: hashicorp/setup-terraform@v1
         with:
         terraform_version: 1.0.0
-    
+
       - name: Install Trivy
         run: |
           sudo apt-get update && sudo apt-get install wget gnupg2 -y
@@ -42,17 +40,17 @@ jobs:
       - name: Run Trivy
         run: |
           trivy filesystem --exit-code 1 --severity HIGH,CRITICAL .
-  
+
       - name: Terraform Init
         run: |
           cd terraform
           terraform init
-    
+
       - name: Terraform Plan
         run: |
           cd terraform
           terraform plan
-                
+        
       - name: Run Infracost
         run: |
           infracost diff --path=./terraform
