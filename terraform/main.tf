@@ -23,7 +23,6 @@ resource "random_string" "fqdn" {
  length  = 6
  special = false
  upper   = false
- number  = false
 }
 
 resource "azurerm_virtual_network" "DatariskVM" {
@@ -82,7 +81,6 @@ resource "azurerm_lb_rule" "lbnatrule" {
    protocol                       = "Tcp"
    frontend_port                  = var.application_port
    backend_port                   = var.application_port
-   backend_address_pool_id        = azurerm_lb_backend_address_pool.bpepool.id
    frontend_ip_configuration_name = "PublicIPAddress"
    probe_id                       = azurerm_lb_probe.DatariskVM.id
 }
@@ -124,7 +122,6 @@ resource "azurerm_virtual_machine_scale_set" "DatariskVM" {
    computer_name_prefix = "vmlab"
    admin_username       = var.admin_user
    admin_password       = var.admin_password
-   custom_data          = file("web.conf")
  }
 
  os_profile_linux_config {

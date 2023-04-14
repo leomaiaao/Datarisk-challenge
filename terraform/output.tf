@@ -1,5 +1,5 @@
-output "vmss_public_ip_fqdn" {
-   value = azurerm_public_ip.vmss.fqdn
+output "DatariskVM_public_ip_fqdn" {
+   value = azurerm_public_ip.DatariskVM.fqdn
 }
 
 output "jumpbox_public_ip_fqdn" {
