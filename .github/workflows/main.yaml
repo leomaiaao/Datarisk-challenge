@@ -13,6 +13,12 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      matrix:
+        environment:
+          - dev
+          - test
+    environment: ${{ matrix.environment }}
     steps:
       - name: 🛒 Checkout
         id: checkout
@@ -53,6 +59,8 @@ jobs:
           terraform plan
         
       - name: Run Infracost
+        env:
+          INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
         run: |
           infracost diff --path=./terraform
 
