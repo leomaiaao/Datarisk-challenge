@@ -1,0 +1,124 @@
+name: Main
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/README.md'
+  workflow_dispatch:
+
+env:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: 🛒 Checkout
+        id: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Infracost
+        run: |
+          curl https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+          infracost --version
+
+      - name: Install Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.0.0
+    
+      - name: Install Trivy
+        run: |
+          sudo apt-get update && sudo apt-get install wget gnupg2 -y
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update && sudo apt-get install trivy -y
+
+      - name: Run Trivy
+        run: |
+          trivy filesystem --exit-code 1 --severity HIGH,CRITICAL .
+  
+      - name: Terraform Init
+        run: |
+          cd terraform
+          terraform init
+    
+      - name: Terraform Plan
+        run: |
+          cd terraform
+          terraform plan
+                
+      - name: Run Infracost
+        run: |
+          infracost diff --path=./terraform
+
+      - name: Save Infracost Report
+        run: |
+          infracost diff --path=./terraform --format=json | tee infracost-report.json
+
+      - name: Upload Infracost Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: infracost-report
+          path: infracost-report.json
+
+  terraform-apply:
+    name: terraform apply
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        environment:
+          - dev
+          - test
+    environment: ${{ matrix.environment }}
+    steps:
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+
+      - name: Terraform apply
+        run: |
+          cd terraform
+          terraform apply -y
+
+  deploy:
+    name: Deploy
+    needs: terraform-apply
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        environment:
+          - dev
+          - test
+    environment: ${{ matrix.environment }}
+    steps:
+      - name: 🛒 Checkout
+        id: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Build and push Docker image
+        run: |
+          docker-compose build
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u USERNAME --password-stdin
+          docker tag my-service ghcr.io/USERNAME/my-service:latest
+          docker push ghcr.io/USERNAME/my-service:latest
+        env:
+          USERNAME: ${{ github.actor }}
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y ansible
+      - name: Run Ansible playbook
+        run: ansible-playbook playbook.yaml
+        env:
+          ANSIBLE_PRIVATE_KEY: ${{ secrets.ANSIBLE_PRIVATE_KEY }}
