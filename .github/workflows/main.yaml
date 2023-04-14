@@ -17,7 +17,6 @@ jobs:
       matrix:
         environment:
           - dev
-          - test
     environment: ${{ matrix.environment }}
     steps:
       - name: 🛒 Checkout
@@ -62,7 +61,7 @@ jobs:
         env:
           INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
         run: |
-          infracost diff --path=./terraform
+          infracost diff --path=./terraform --compare-to infracost-base.json
 
       - name: Save Infracost Report
         run: |
