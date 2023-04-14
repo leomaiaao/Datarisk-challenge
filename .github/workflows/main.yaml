@@ -61,7 +61,7 @@ jobs:
         env:
           INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
         run: |
-          infracost diff --path=./terraform --compare-to infracost-base.json
+          infracost diff --path=./terraform --compare-to ./terraform/infracost-base.json
 
       - name: Save Infracost Report
         run: |
