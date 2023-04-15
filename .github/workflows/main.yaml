@@ -155,13 +155,18 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build container
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: docker-compose.yml
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
+      - name: Build and push Docker image
+        run: |
+          cd wordpress
+          docker-compose up -d
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u leomaiaao --password-stdin
+          docker ps -a
+          docker tag wordpress ghcr.io/leomaiaao/wordpress:latest
+          docker push ghcr.io/leomaiaao/wordpress:latest
+          docker tag mysql ghcr.io/leomaiaao/wordpressdb:latest
+          docker push ghcr.io/leomaiaao/wordpressdb:latest
+        env:
+          USERNAME: ${{ github.actor }}
 
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y ansible
