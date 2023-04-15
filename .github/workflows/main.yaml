@@ -8,6 +8,9 @@ on:
       - '**/README.md'
   workflow_dispatch:
 
+env:
+  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+
 jobs:
   test:
     name: Test
@@ -24,6 +27,11 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ env.AZURE_CREDENTIALS }}
 
       - name: Install Infracost
         run: |
@@ -85,6 +93,18 @@ jobs:
           - test
     environment: ${{ matrix.environment }}
     steps:
+
+      - name: 🛒 Checkout
+        id: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ env.AZURE_CREDENTIALS }}
+
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v1
         with:
@@ -112,6 +132,11 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ env.AZURE_CREDENTIALS }}
 
       - name: Build and push Docker image
         run: |
