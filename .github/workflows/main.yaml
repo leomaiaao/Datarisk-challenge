@@ -167,7 +167,7 @@ jobs:
       - name: Push to GHCR
         run: |
           docker push ghcr.io/leomaiaao/wordpress:latest
-          docker push ghcr.io/leomaiaao/wordpressdb:latest
+          docker push ghcr.io/leomaiaao/mysql:latest
 
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y ansible
