@@ -92,7 +92,6 @@ jobs:
       matrix:
         environment:
           - dev
-          - test
     environment: ${{ matrix.environment }}
     steps:
 
@@ -128,7 +127,6 @@ jobs:
       matrix:
         environment:
           - dev
-          - test
     environment: ${{ matrix.environment }}
     steps:
       - name: 🛒 Checkout
@@ -145,6 +143,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
+          cd wordpress
           docker-compose up -d
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u USERNAME --password-stdin
           docker tag my-service ghcr.io/USERNAME/my-service:latest
