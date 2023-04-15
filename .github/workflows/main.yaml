@@ -146,9 +146,10 @@ jobs:
           cd wordpress
           docker-compose up -d
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u leomaiaao --password-stdin
-          docker tag wordpress-wordpress-1 ghcr.io/leomaiaao/wordpress:latest
+          docker ps -a
+          docker tag wordpress ghcr.io/leomaiaao/wordpress:latest
           docker push ghcr.io/leomaiaao/wordpress:latest
-          docker tag wordpress-db-1 ghcr.io/leomaiaao/wordpressdb:latest
+          docker tag mysql ghcr.io/leomaiaao/wordpressdb:latest
           docker push ghcr.io/leomaiaao/wordpressdb:latest
         env:
           USERNAME: ${{ github.actor }}
