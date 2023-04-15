@@ -143,7 +143,7 @@ jobs:
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/leomaiaao/publish-packages/game
           tags: type=sha
@@ -155,16 +155,18 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Build Docker image
         run: |
           cd wordpress
           docker-compose up -d
           docker tag wordpress ghcr.io/leomaiaao/wordpress:latest
-          docker push ghcr.io/leomaiaao/wordpress:latest
           docker tag mysql ghcr.io/leomaiaao/wordpressdb:latest
+          
+
+      - name: Push to GHCR
+        run: |
+          docker push ghcr.io/leomaiaao/wordpress:latest
           docker push ghcr.io/leomaiaao/wordpressdb:latest
-        env:
-          USERNAME: ${{ github.actor }}
 
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y ansible
