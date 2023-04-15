@@ -159,8 +159,9 @@ jobs:
         run: |
           cd wordpress
           docker-compose up -d
-          docker tag wordpress ghcr.io/leomaiaao/wordpress:latest
-          docker tag mysql ghcr.io/leomaiaao/wordpressdb:latest
+          docker ps -a
+          docker tag wordpress-wordpress-1 ghcr.io/leomaiaao/wordpress:latest
+          docker tag wordpress-db-1 ghcr.io/leomaiaao/wordpressdb:latest
           
 
       - name: Push to GHCR
