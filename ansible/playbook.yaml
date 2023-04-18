@@ -77,15 +77,15 @@
 
     - name: Copiar arquivo wordpress
       copy:
-        src: "wordpress"
-        dest: /etc/nginx/sites-available/wordpress
+        src: "wordpress.conf"
+        dest: /etc/nginx/sites-available/wordpress.conf
         mode: 0644
       become: true
 
     - name: Create Nginx site symlink
       file:
-        src: /etc/nginx/sites-available/wordpress
-        dest: /etc/nginx/sites-enabled/wordpress
+        src: /etc/nginx/sites-available/wordpress.conf
+        dest: /etc/nginx/sites-enabled/wordpress.conf
         state: link
         force: yes
 
