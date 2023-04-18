@@ -10,10 +10,6 @@ on:
 
 env:
   AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }} 
-  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
 jobs:
   test:
@@ -63,17 +59,17 @@ jobs:
       - name: Create tfvars.file
         run: |
           cd terraform
-          echo "${{secrets.LOGIN_VARS}}" >> login.tfvars
+          echo "${{secrets.LOGIN_VARS}}" >> login.tfvars.json
 
       - name: Initialize Terraform
         run: |
           cd terraform
-          terraform init -var-file="login.tfvars"
+          terraform init -var-file="login.tfvars.json"
 
       - name: Plan changes
         run: |
           cd terraform
-          terraform plan -var-file="login.tfvars" -out=tfplan
+          terraform plan -var-file="login.tfvars.json" -out=tfplan
 
       - name: Run Infracost
         env:
@@ -122,17 +118,17 @@ jobs:
 
       - name: Create tfvars.file
         run: |
-          echo "${{secrets.LOGIN_VARS}}" >> login.tfvars
+          echo "${{secrets.LOGIN_VARS}}" >> login.tfvars.json
 
       - name: Initialize Terraform
         run: |
           cd terraform
-          terraform init -var-file="login.tfvars"
+          terraform init -var-file="login.tfvars.json"
 
       - name: Plan changes
         run: |
           cd terraform
-          terraform plan -var-file="login.tfvars" -out=tfplan
+          terraform plan -var-file="login.tfvars.json" -out=tfplan
 
       - name: Apply changes
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
