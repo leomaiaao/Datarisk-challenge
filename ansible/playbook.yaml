@@ -40,18 +40,6 @@
         name: docker-compose
         state: present
 
-    - name: Instalar o Nginx
-      apt:
-        name: nginx
-        state: present
-
-    - name: Install Certbot
-      apt:
-        name:
-          - certbot
-          - python3-certbot-nginx
-        state: present
-
     - name: Log in to GitHub Container Registry
       docker_login:
         registry_url: ghcr.io
@@ -74,29 +62,6 @@
         name: wordpress
         image: ghcr.io/leomaiaao/wordpress:latest
         state: started
-
-    - name: Copiar arquivo wordpress
-      copy:
-        src: "wordpress.conf"
-        dest: /etc/nginx/sites-available/wordpress.conf
-        mode: 0644
-      become: true
-
-    - name: Create Nginx site symlink
-      file:
-        src: /etc/nginx/sites-available/wordpress.conf
-        dest: /etc/nginx/sites-enabled/wordpress.conf
-        state: link
-        force: yes
-
-    - name: Verificar configuração do NGINX
-      command: sudo nginx -t
-
-    - name: Restart Nginx
-      command: sudo systemctl restart nginx
-
-    - name: Executar Certbot para configurar SSL/TLS
-      command: sudo certbot --nginx -d  seu-dominio.com
 
     - name: Install Grafana
       apt:
