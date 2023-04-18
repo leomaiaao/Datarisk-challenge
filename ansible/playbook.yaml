@@ -57,6 +57,7 @@
         registry_url: ghcr.io
         username: leomaiaao
         password: {{LEO_GITHUB_TOKEN}}
+
     - name: Start Database container
       docker_container:
         name: mysql

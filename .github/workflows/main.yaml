@@ -55,18 +55,18 @@ jobs:
       - name: Run Trivy
         run: |
           trivy filesystem --exit-code 1 --severity HIGH,CRITICAL .
+          
+      - name: Configure Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
 
-      - name: Terraform Init
-        run: |
-          cd terraform
-          terraform init
+      - name: Initialize Terraform
+        run: terraform init
 
-      - name: Terraform Plan
-        continue-on-error: true
-        run: |
-          cd terraform
-          terraform plan
-        
+      - name: Plan changes
+        run: terraform plan
+
       - name: Run Infracost
         env:
           INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
@@ -106,17 +106,21 @@ jobs:
         continue-on-error: true
         with:
           creds: ${{ env.AZURE_CREDENTIALS }}
-
-      - name: Install Terraform
+          
+      - name: Configure Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.0.0
 
-      - name: Terraform apply
-        continue-on-error: true
-        run: |
-          cd terraform
-          terraform apply -y
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Plan changes
+        run: terraform plan -out=tfplan
+
+      - name: Apply changes
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply tfplan
 
   deploy:
     name: Deploy
