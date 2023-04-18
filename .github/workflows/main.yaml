@@ -62,6 +62,7 @@ jobs:
 
       - name: Create tfvars.file
         run: |
+          cd terraform
           echo "${{secrets.LOGIN_VARS}}" >> login.tfvars
 
       - name: Initialize Terraform
