@@ -204,17 +204,6 @@
     #     - grafana
 
   handlers:
-    - name: Enable UFW
-      ufw:
-        rule: allow
-        port: "80/tcp"
-        state: enabled
-
-    - name: Reload Nginx
-      systemd:
-        name: nginx
-        state: restarted
-
     - name: Restart Docker
       systemd:
         name: docker
