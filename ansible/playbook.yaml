@@ -85,6 +85,19 @@
       tags:
         - grafana
 
+    - name: Add Grafana datasource
+      grafana_datasource:
+        name: grafana_datasource_name
+        type: prometheus
+        url: http://localhost:9090
+        access: proxy
+        is_default: true
+        basic_auth_user: grafana_admin_user
+        basic_auth_password: grafana_admin_password
+        state: present
+      tags:
+        - grafana
+
     - name: Add Grafana APT repository
       apt_repository:
         repo: deb https://packages.grafana.com/oss/deb stable main
@@ -108,27 +121,14 @@
       tags:
         - grafana
 
-    - name: Add Grafana datasource
-      grafana_datasource:
-        name: "{{ grafana_datasource_name }}"
-        type: prometheus
-        url: http://localhost:9090
-        access: proxy
-        is_default: true
-        basic_auth_user: "{{ grafana_admin_user }}"
-        basic_auth_password: "{{ grafana_admin_password }}"
-        state: present
-      tags:
-        - grafana
-
     - name: Add Grafana dashboard
       grafana_dashboard:
-        name: "{{ grafana_dashboard_name }}"
+        name: grafana_dashboard_name
         file: /path/to/mydashboard.json
         folder_id: 0
         overwrite: true
-        basic_auth_user: "{{ grafana_admin_user }}"
-        basic_auth_password: "{{ grafana_admin_password }}"
+        basic_auth_user: grafana_admin_user
+        basic_auth_password: grafana_admin_password
         state: present
       tags:
         - grafana
