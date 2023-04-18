@@ -56,8 +56,7 @@
       docker_login:
         registry_url: ghcr.io
         username: leomaiaao
-        password: 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
-
+        password: {{LEO_GITHUB_TOKEN}}
     - name: Start Database container
       docker_container:
         name: mysql
