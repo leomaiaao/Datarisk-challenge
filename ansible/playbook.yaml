@@ -33,6 +33,11 @@
 
     - name: Extract Prometheus archive
       become: true
+      user:
+        name: prometheus
+        comment: "Prometheus User"
+        shell: /bin/bash
+        createhome: yes
       unarchive:
         src: /tmp/prometheus-2.34.0.linux-amd64.tar.gz
         dest: /usr/local/bin/
