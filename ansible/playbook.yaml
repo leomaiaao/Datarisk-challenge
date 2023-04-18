@@ -26,64 +26,59 @@
           - tar
         state: present
     
-    - name: Download Prometheus archive
-      get_url:
-        url: "https://github.com/prometheus/prometheus/releases/download/v2.34.0/prometheus-2.34.0.linux-amd64.tar.gz"
-        dest: /tmp/prometheus-2.34.0.linux-amd64.tar.gz
+    # - name: Download Prometheus archive
+    #   get_url:
+    #     url: "https://github.com/prometheus/prometheus/releases/download/v2.34.0/prometheus-2.34.0.linux-amd64.tar.gz"
+    #     dest: /tmp/prometheus-2.34.0.linux-amd64.tar.gz
 
-    - name: Extract Prometheus archive
-      become: true
-      user:
-        name: prometheus
-        comment: "Prometheus User"
-        shell: /bin/bash
-        createhome: yes
-      unarchive:
-        src: /tmp/prometheus-2.34.0.linux-amd64.tar.gz
-        dest: /usr/local/bin/
-        remote_src: yes
+    # - name: Extract Prometheus archive
+    #   become: true
+    #   unarchive:
+    #     src: /tmp/prometheus-2.34.0.linux-amd64.tar.gz
+    #     dest: /usr/local/bin/
+    #     remote_src: yes
 
-    - name: Create Prometheus user and directories
-      become: true
-      file:
-        path: "{{ item }}"
-        state: directory
-        owner: prometheus
-        group: prometheus
-        mode: 0755
-      with_items:
-        - /var/lib/prometheus
-        - /var/log/prometheus
-        - /etc/prometheus
+    # - name: Create Prometheus user and directories
+    #   become: true
+    #   file:
+    #     path: "{{ item }}"
+    #     state: directory
+    #     owner: prometheus
+    #     group: prometheus
+    #     mode: 0755
+    #   with_items:
+    #     - /var/lib/prometheus
+    #     - /var/log/prometheus
+    #     - /etc/prometheus
 
-    - name: Copy Prometheus configuration
-      become: true
-      copy:
-        src: /path/to/prometheus.yml
-        dest: /etc/prometheus/prometheus.yml
-        owner: prometheus
-        group: prometheus
-        mode: 0644
+    # - name: Copy Prometheus configuration
+    #   become: true
+    #   copy:
+    #     src: /path/to/prometheus.yml
+    #     dest: /etc/prometheus/prometheus.yml
+    #     owner: prometheus
+    #     group: prometheus
+    #     mode: 0644
 
-    - name: Copy Prometheus systemd unit file
-      become: true
-      copy:
-        src: /path/to/prometheus.service
-        dest: /etc/systemd/system/prometheus.service
-        owner: root
-        group: root
-        mode: 0644
+    # - name: Copy Prometheus systemd unit file
+    #   become: true
+    #   copy:
+    #     src: /path/to/prometheus.service
+    #     dest: /etc/systemd/system/prometheus.service
+    #     owner: root
+    #     group: root
+    #     mode: 0644
 
-    - name: Reload systemd daemon
-      become: true
-      systemd:
-        daemon_reload: yes
+    # - name: Reload systemd daemon
+    #   become: true
+    #   systemd:
+    #     daemon_reload: yes
 
-    - name: Enable and start Prometheus service
-      become: true
-      systemd:
-        name: prometheus.service
-        enabled: yes
+    # - name: Enable and start Prometheus service
+    #   become: true
+    #   systemd:
+    #     name: prometheus.service
+    #     enabled: yes
 
     - name: Add Docker GPG key
       apt_key:
@@ -135,78 +130,78 @@
           WORDPRESS_DB_USER: wordpress
           WORDPRESS_DB_PASSWORD: wordpress
 
-    - name: Install Grafana
-      apt:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - apt-transport-https
-        - software-properties-common
-        - wget
-      tags:
-        - grafana
+    # - name: Install Grafana
+    #   apt:
+    #     name: "{{ item }}"
+    #     state: present
+    #   loop:
+    #     - apt-transport-https
+    #     - software-properties-common
+    #     - wget
+    #   tags:
+    #     - grafana
 
-    - name: Add Grafana APT key
-      apt_key:
-        url: https://packages.grafana.com/gpg.key
-        state: present
-      tags:
-        - grafana
+    # - name: Add Grafana APT key
+    #   apt_key:
+    #     url: https://packages.grafana.com/gpg.key
+    #     state: present
+    #   tags:
+    #     - grafana
 
-    - name: Add Grafana datasource
-      grafana_datasource:
-        name: "{{ grafana_datasource_name }}"
-        type: "{{ ds_type }}"
-        url: "{{ ds_url }}"
-        access: proxy
-        is_default: true
-        basic_auth_user: "{{ grafana_admin_user }}"
-        basic_auth_password: "{{ grafana_admin_password }}"
-        state: present
-      tags:
-        - grafana
+    # - name: Add Grafana datasource
+    #   grafana_datasource:
+    #     name: "{{ grafana_datasource_name }}"
+    #     type: "{{ ds_type }}"
+    #     url: "{{ ds_url }}"
+    #     access: proxy
+    #     is_default: true
+    #     basic_auth_user: "{{ grafana_admin_user }}"
+    #     basic_auth_password: "{{ grafana_admin_password }}"
+    #     state: present
+    #   tags:
+    #     - grafana
 
-    - name: Add Grafana APT repository
-      apt_repository:
-        repo: deb https://packages.grafana.com/oss/deb stable main
-        state: present
-        filename: grafana.list
-      tags:
-        - grafana
+    # - name: Add Grafana APT repository
+    #   apt_repository:
+    #     repo: deb https://packages.grafana.com/oss/deb stable main
+    #     state: present
+    #     filename: grafana.list
+    #   tags:
+    #     - grafana
 
-    - name: Install Grafana
-      apt:
-        name: grafana
-        state: present
-      tags:
-        - grafana
+    # - name: Install Grafana
+    #   apt:
+    #     name: grafana
+    #     state: present
+    #   tags:
+    #     - grafana
 
-    - name: Start Grafana service
-      service:
-        name: grafana-server
-        state: started
-        enabled: yes
-      tags:
-        - grafana
+    # - name: Start Grafana service
+    #   service:
+    #     name: grafana-server
+    #     state: started
+    #     enabled: yes
+    #   tags:
+    #     - grafana
 
-    - name: Copy file to remote host
-      copy:
-        src: mydashboard.json
-        dest: ~/mydashboard.json
-        mode: '0644'
-      become: true
+    # - name: Copy file to remote host
+    #   copy:
+    #     src: mydashboard.json
+    #     dest: ~/mydashboard.json
+    #     mode: '0644'
+    #   become: true
 
-    - name: Add Grafana dashboard
-      grafana_dashboard:
-        name: "{{ grafana_dashboard_name }}"
-        file: ~/mydashboard.json
-        folder_id: 0
-        overwrite: true
-        basic_auth_user: "{{ grafana_admin_user }}"
-        basic_auth_password: "{{ grafana_admin_password }}"
-        state: present
-      tags:
-        - grafana
+    # - name: Add Grafana dashboard
+    #   grafana_dashboard:
+    #     name: "{{ grafana_dashboard_name }}"
+    #     file: ~/mydashboard.json
+    #     folder_id: 0
+    #     overwrite: true
+    #     basic_auth_user: "{{ grafana_admin_user }}"
+    #     basic_auth_password: "{{ grafana_admin_password }}"
+    #     state: present
+    #   tags:
+    #     - grafana
 
   handlers:
     - name: Enable UFW
