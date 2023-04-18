@@ -75,17 +75,17 @@
         image: ghcr.io/leomaiaao/wordpress:latest
         state: started
 
-    - name: Copiar arquivo wordpress.conf
+    - name: Copiar arquivo wordpress
       copy:
-        src: "wordpress.conf"
-        dest: "/etc/nginx/conf.d/"
+        src: "wordpress"
+        dest: /etc/nginx/sites-available/wordpress
         mode: 0644
       become: true
 
     - name: Create Nginx site symlink
       file:
-        src: /etc/nginx/sites-available/wordpress.conf
-        dest: /etc/nginx/sites-enabled/wordpress.conf
+        src: /etc/nginx/sites-available/wordpress
+        dest: /etc/nginx/sites-enabled/wordpress
         state: link
         force: yes
 
@@ -93,7 +93,7 @@
       command: sudo nginx -t
 
     - name: Restart Nginx
-      command: sudo systemctl restart nginx
+      command: sudo service restart nginx
 
     - name: Executar Certbot para configurar SSL/TLS
       command: sudo certbot --nginx -d  seu-dominio.com
