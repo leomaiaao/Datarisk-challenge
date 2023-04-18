@@ -59,7 +59,7 @@ jobs:
       - name: Create tfvars.file
         run: |
           cd terraform
-          echo "${{secrets.LOGIN_VARS}}" >> login.tfvars.json
+          echo "${{env.LOGIN_VARS}}" >> login.tfvars.json
 
       - name: Initialize Terraform
         run: |
@@ -119,7 +119,7 @@ jobs:
       - name: Create tfvars.file
         run: |
           cd terraform
-          echo "${{secrets.LOGIN_VARS}}" >> login.tfvars.json
+          echo "${{env.LOGIN_VARS}}" >> login.tfvars.json
 
       - name: Initialize Terraform
         run: |
