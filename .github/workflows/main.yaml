@@ -84,7 +84,7 @@ jobs:
           path: infracost-report.json
 
   terraform-apply:
-    name: terraform apply
+    name: Terraform Apply
     needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -155,6 +155,9 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.LEO_GITHUB_TOKEN }}
 
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
       - name: Build Docker image
         run: |
           cd wordpress
@@ -162,16 +165,27 @@ jobs:
           docker ps -a
           docker tag wordpress ghcr.io/leomaiaao/wordpress:latest
           docker tag mysql:5.7 ghcr.io/leomaiaao/mysql:latest
-          
 
       - name: Push to GHCR
         run: |
           docker push ghcr.io/leomaiaao/wordpress:latest
           docker push ghcr.io/leomaiaao/mysql:latest
 
+      - name: Run Azure CLI command
+        run: |
+          az vm user update \
+            --resource-group Datarisk \
+            --name DatariskVM \
+            --username ubuntu \
+            --ssh-key-value "$(cat my-public-key.pub)"
+        env:
+          AZURE_PUBLIC_KEY: ${{ secrets.MY_PUBLIC_KEY }}
+
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y ansible
       - name: Run Ansible playbook
-        run: ansible-playbook playbook.yaml
+        run: |
+          cd ansible
+          ansible-playbook -i hosts.yml playbook.yaml[200~[azure_vm]
         env:
-          ANSIBLE_PRIVATE_KEY: ${{ secrets.ANSIBLE_PRIVATE_KEY }}
+          ANSIBLE_PRIVATE_KEY: ~/chave_privada.pem

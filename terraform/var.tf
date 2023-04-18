@@ -1,6 +1,6 @@
 variable "resource_group_name" {
    description = "Name of the resource group in which the resources will be created"
-   default     = "myResourceGroup"
+   default     = "Datarisk"
 }
 
 variable "location" {
@@ -12,13 +12,8 @@ variable "tags" {
    description = "Map of the tags to use for the resources that are deployed"
    type        = map(string)
    default = {
-      environment = "codelab"
+      environment = "datarisk"
    }
-}
-
-variable "application_port" {
-   description = "Port that you want to expose to the external load balancer"
-   default     = 80
 }
 
 variable "admin_user" {
@@ -28,5 +23,5 @@ variable "admin_user" {
 
 variable "admin_password" {
    description = "Default password for admin account"
-   default = "admin1234"
+   default = "Admin1234!"
 }

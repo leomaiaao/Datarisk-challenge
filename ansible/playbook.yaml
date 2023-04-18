@@ -1,27 +1,49 @@
 ---
-- hosts: server
+- hosts: '*'
   become: true
 
   tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
     - name: Install Docker
       apt:
         name:
-          - docker.io
-          - docker-compose
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
         state: present
 
-    - name: Copy files to server
-      copy:
-        src: "{{ item }}"
-        dest: "/home/user/wordpress/"
-      with_items:
-        - nginx.config
-        - default.config
+    - name: Install Docker Compose
+      apt:
+        name: docker-compose
+        state: present
 
-    - name: Start WordPress container
-      command: "docker-compose up -d"
-      args:
-        chdir: "/home/user/wordpress/"
+    - name: Instalar o Nginx
+      apt:
+        name: nginx
+        state: present
 
     - name: Install Certbot
       apt:
@@ -30,99 +52,117 @@
           - python3-certbot-nginx
         state: present
 
-    - name: Generate SSL/TLS certificate
-      shell: "certbot --nginx --agree-tos --redirect --email youremail@example.com --domains example.com"
-      register: certbot_result
-      changed_when: certbot_result.stdout_lines | search('Congratulations! Your certificate and chain have been saved')
+    - name: Log in to GitHub Container Registry
+      docker_login:
+        registry_url: ghcr.io
+        username: leomaiaao
+        password: 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
 
-    - name: Copy certificate to Nginx container
+    - name: Start Database container
+      docker_container:
+        name: mysql
+        image: ghcr.io/leomaiaao/mysql:latest
+        state: started
+        env:
+          MYSQL_ROOT_PASSWORD: somewordpress
+          MYSQL_DATABASE: wordpress
+          MYSQL_USER: wordpress
+          MYSQL_PASSWORD: wordpress
+
+    - name: Start WordPress container
+      docker_container:
+        name: wordpress
+        image: ghcr.io/leomaiaao/wordpress:latest
+        state: started
+
+    - name: Copiar arquivo wordpress.conf
       copy:
-        src: "/etc/letsencrypt/live/example.com/"
-        dest: "/home/user/wordpress/certbot/"
+        src: "wordpress.conf"
+        dest: "/etc/nginx/conf.d/"
         mode: 0644
-
-    - name: Restart Nginx container
-      command: "docker restart nginx"
-      args:
-        chdir: "/home/user/wordpress/"
-      notify:
-        - Enable UFW
-        - Reload Nginx
-        - Restart Docker
-
-    - name: Configure Grafana
       become: true
-      vars:
-        grafana_admin_user: admin
-        grafana_admin_password: mypassword
-        grafana_datasource_name: mydatasource
-        grafana_dashboard_name: mydashboard
-      tasks:
-        - name: Install Grafana
-          apt:
-            name: "{{ item }}"
-            state: present
-          loop:
-            - apt-transport-https
-            - software-properties-common
-            - wget
-          tags:
-            - grafana
 
-        - name: Add Grafana APT key
-          apt_key:
-            url: https://packages.grafana.com/gpg.key
-            state: present
-          tags:
-            - grafana
+    - name: Create Nginx site symlink
+      file:
+        src: /etc/nginx/sites-available/wordpress.conf
+        dest: /etc/nginx/sites-enabled/wordpress.conf
+        state: link
+        force: yes
 
-        - name: Add Grafana APT repository
-          apt_repository:
-            repo: deb https://packages.grafana.com/oss/deb stable main
-            state: present
-            filename: grafana.list
-          tags:
-            - grafana
+    - name: Verificar configuração do NGINX
+      command: sudo nginx -t
 
-        - name: Install Grafana
-          apt:
-            name: grafana
-            state: present
-          tags:
-            - grafana
+    - name: Restart Nginx
+      command: sudo systemctl restart nginx
 
-        - name: Start Grafana service
-          service:
-            name: grafana-server
-            state: started
-            enabled: yes
-          tags:
-            - grafana
+    - name: Executar Certbot para configurar SSL/TLS
+      command: sudo certbot --nginx -d  seu-dominio.com
 
-        - name: Add Grafana datasource
-          grafana_datasource:
-            name: "{{ grafana_datasource_name }}"
-            type: prometheus
-            url: http://localhost:9090
-            access: proxy
-            is_default: true
-            basic_auth_user: "{{ grafana_admin_user }}"
-            basic_auth_password: "{{ grafana_admin_password }}"
-            state: present
-          tags:
-            - grafana
+    - name: Install Grafana
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - apt-transport-https
+        - software-properties-common
+        - wget
+      tags:
+        - grafana
 
-        - name: Add Grafana dashboard
-          grafana_dashboard:
-            name: "{{ grafana_dashboard_name }}"
-            file: /path/to/mydashboard.json
-            folder_id: 0
-            overwrite: true
-            basic_auth_user: "{{ grafana_admin_user }}"
-            basic_auth_password: "{{ grafana_admin_password }}"
-            state: present
-          tags:
-            - grafana
+    - name: Add Grafana APT key
+      apt_key:
+        url: https://packages.grafana.com/gpg.key
+        state: present
+      tags:
+        - grafana
+
+    - name: Add Grafana APT repository
+      apt_repository:
+        repo: deb https://packages.grafana.com/oss/deb stable main
+        state: present
+        filename: grafana.list
+      tags:
+        - grafana
+
+    - name: Install Grafana
+      apt:
+        name: grafana
+        state: present
+      tags:
+        - grafana
+
+    - name: Start Grafana service
+      service:
+        name: grafana-server
+        state: started
+        enabled: yes
+      tags:
+        - grafana
+
+    - name: Add Grafana datasource
+      grafana_datasource:
+        name: "{{ grafana_datasource_name }}"
+        type: prometheus
+        url: http://localhost:9090
+        access: proxy
+        is_default: true
+        basic_auth_user: "{{ grafana_admin_user }}"
+        basic_auth_password: "{{ grafana_admin_password }}"
+        state: present
+      tags:
+        - grafana
+
+    - name: Add Grafana dashboard
+      grafana_dashboard:
+        name: "{{ grafana_dashboard_name }}"
+        file: /path/to/mydashboard.json
+        folder_id: 0
+        overwrite: true
+        basic_auth_user: "{{ grafana_admin_user }}"
+        basic_auth_password: "{{ grafana_admin_password }}"
+        state: present
+      tags:
+        - grafana
 
   handlers:
     - name: Enable UFW
