@@ -190,7 +190,7 @@ jobs:
           docker push ghcr.io/leomaiaao/mysql:latest
 
       - name: Add SSH host key to known_hosts
-        run: mkdir -p ~/.ssh && ssh-keyscan 20.127.21.144 > ~/.ssh/known_hosts
+        run: mkdir -p ~/.ssh && ssh-keyscan 20.51.151.194 > ~/.ssh/known_hosts
 
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y ansible
