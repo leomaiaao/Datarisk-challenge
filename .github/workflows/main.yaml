@@ -59,6 +59,7 @@ jobs:
         run: |
           cd terraform
           echo "{"clientId":"${{ secrets.clientId }}","clientSecret":"${{ secrets.clientSecret }}","subscriptionId":"${{ secrets.subscriptionId }}","tenantId":"${{ secrets.tenantId }}"}" >> login.tfvars.json
+          cat login.tfvars.json
 
       - name: Initialize Terraform
         run: |
