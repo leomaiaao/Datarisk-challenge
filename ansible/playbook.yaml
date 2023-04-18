@@ -1,6 +1,8 @@
 ---
 - hosts: '*'
   become: true
+  vars:
+    github_token: "{{ lookup('env', 'LEO_GITHUB_TOKEN') }}"
 
   tasks:
     - name: Update apt cache
@@ -56,7 +58,7 @@
       docker_login:
         registry_url: ghcr.io
         username: leomaiaao
-        password: "{{ lookup('env', 'LEO_GITHUB_TOKEN') }}"
+        password: "{{github_token}}"
 
     - name: Start Database container
       docker_container:
