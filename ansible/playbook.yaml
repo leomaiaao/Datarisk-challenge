@@ -2,7 +2,7 @@
 - hosts: '*'
   become: true
   vars:
-    github_token: "{{ lookup('env', 'LEO_GITHUB_TOKEN') }}"
+    github_token: "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"
 
   tasks:
     - name: Update apt cache
