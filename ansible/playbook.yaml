@@ -95,17 +95,17 @@
         - grafana
 
     - name: Add Grafana datasource
-          grafana_datasource:
-            name: "{{ grafana_datasource_name }}"
-            type: "{{ ds_type }}"
-            url: "{{ ds_url }}"
-            access: proxy
-            is_default: true
-            basic_auth_user: "{{ grafana_admin_user }}"
-            basic_auth_password: "{{ grafana_admin_password }}"
-            state: present
-          tags:
-            - grafana
+      grafana_datasource:
+        name: "{{ grafana_datasource_name }}"
+        type: "{{ ds_type }}"
+        url: "{{ ds_url }}"
+        access: proxy
+        is_default: true
+        basic_auth_user: "{{ grafana_admin_user }}"
+        basic_auth_password: "{{ grafana_admin_password }}"
+        state: present
+      tags:
+        - grafana
 
     - name: Add Grafana APT repository
       apt_repository:
