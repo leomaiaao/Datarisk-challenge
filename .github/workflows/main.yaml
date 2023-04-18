@@ -9,7 +9,8 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }} 
+  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+  LOGIN_CRED: ${{  vars.LOGIN_VARS }}
 
 jobs:
   test:
@@ -30,8 +31,6 @@ jobs:
 
       - name: Login to Azure
         uses: azure/login@v1
-        continue-on-error: true
-
         with:
           creds: ${{ env.AZURE_CREDENTIALS }}
 
@@ -59,7 +58,7 @@ jobs:
       - name: Create tfvars.file
         run: |
           cd terraform
-          echo "${{env.LOGIN_VARS}}" >> login.tfvars.json
+          echo "${{ env.LOGIN_CRED }}" >> login.tfvars.json
 
       - name: Initialize Terraform
         run: |
@@ -119,7 +118,7 @@ jobs:
       - name: Create tfvars.file
         run: |
           cd terraform
-          echo "${{env.LOGIN_VARS}}" >> login.tfvars.json
+          echo "${{ env.LOGIN_CRED }}" >> login.tfvars.json
 
       - name: Initialize Terraform
         run: |
