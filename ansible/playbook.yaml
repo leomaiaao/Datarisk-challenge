@@ -36,7 +36,7 @@
       unarchive:
         src: /tmp/prometheus-2.34.0.linux-amd64.tar.gz
         dest: /usr/local/bin/
-        copy: no
+        fetch: no
         remote_src: yes
 
     - name: Create Prometheus user and directories
