@@ -22,18 +22,64 @@
           - curl
           - gnupg-agent
           - software-properties-common
+          - wget
+          - tar
         state: present
-        
-    - name: Add Prometheus package repository
-      apt_repository:
-        repo: 'deb http://packages.prometheus.io/apt/prometheus {{ ansible_distribution_release }} main'
-        state: present
-        filename: prometheus
+    
+    - name: Download Prometheus archive
+      get_url:
+        url: "https://github.com/prometheus/prometheus/releases/download/v2.34.0/prometheus-2.34.0.linux-amd64.tar.gz"
+        dest: /tmp/prometheus-2.34.0.linux-amd64.tar.gz
 
-    - name: Install Prometheus
-      apt:
-        name: prometheus
-        state: present
+    - name: Extract Prometheus archive
+      become: true
+      unarchive:
+        src: /tmp/prometheus-2.34.0.linux-amd64.tar.gz
+        dest: /usr/local/bin/
+        copy: no
+        remote_src: yes
+
+    - name: Create Prometheus user and directories
+      become: true
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: prometheus
+        group: prometheus
+        mode: 0755
+      with_items:
+        - /var/lib/prometheus
+        - /var/log/prometheus
+        - /etc/prometheus
+
+    - name: Copy Prometheus configuration
+      become: true
+      copy:
+        src: /path/to/prometheus.yml
+        dest: /etc/prometheus/prometheus.yml
+        owner: prometheus
+        group: prometheus
+        mode: 0644
+
+    - name: Copy Prometheus systemd unit file
+      become: true
+      copy:
+        src: /path/to/prometheus.service
+        dest: /etc/systemd/system/prometheus.service
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Reload systemd daemon
+      become: true
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start Prometheus service
+      become: true
+      systemd:
+        name: prometheus.service
+        enabled: yes
 
     - name: Add Docker GPG key
       apt_key:
