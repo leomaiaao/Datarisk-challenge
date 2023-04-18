@@ -126,12 +126,12 @@ jobs:
       - name: Initialize Terraform
         run: |
           cd terraform
-          terraform init -var-file="loginvars.tfvars"
+          terraform init -var-file="login.tfvars"
 
       - name: Plan changes
         run: |
           cd terraform
-          terraform plan -var-file="loginvars.tfvars" -out=tfplan
+          terraform plan -var-file="login.tfvars" -out=tfplan
 
       - name: Apply changes
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
