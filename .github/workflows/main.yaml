@@ -60,15 +60,19 @@ jobs:
         with:
           terraform_version: 1.0.0
 
+      - name: Create tfvars.file
+        run: |
+          echo "${{secrets.LOGIN_VARS}}" >> login.tfvars
+
       - name: Initialize Terraform
         run: |
           cd terraform
-          terraform init
+          terraform init -var-file="loginvars.tfvars"
 
       - name: Plan changes
         run: |
           cd terraform
-          terraform plan -out=tfplan
+          terraform plan -var-file="loginvars.tfvars" -out=tfplan
 
       - name: Run Infracost
         env:
@@ -115,21 +119,25 @@ jobs:
         with:
           terraform_version: 1.0.0
 
+      - name: Create tfvars.file
+        run: |
+          echo "${{secrets.LOGIN_VARS}}" >> login.tfvars
+
       - name: Initialize Terraform
         run: |
           cd terraform
-          terraform init
+          terraform init -var-file="loginvars.tfvars"
 
       - name: Plan changes
         run: |
           cd terraform
-          terraform plan -out=tfplan
+          terraform plan -var-file="loginvars.tfvars" -out=tfplan
 
       - name: Apply changes
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           cd terraform
-          terraform apply tfplan
+          terraform apply tfplan -var-file="loginvars.tfvars"
 
   deploy:
     name: Deploy
