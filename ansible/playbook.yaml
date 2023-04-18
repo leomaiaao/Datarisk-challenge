@@ -93,7 +93,7 @@
       command: sudo nginx -t
 
     - name: Restart Nginx
-      command: sudo service restart nginx
+      command: sudo systemctl restart nginx
 
     - name: Executar Certbot para configurar SSL/TLS
       command: sudo certbot --nginx -d  seu-dominio.com
