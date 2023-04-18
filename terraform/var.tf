@@ -25,3 +25,19 @@ variable "admin_password" {
    description = "Default password for admin account"
    default = "Admin1234!"
 }
+
+variable "clientId" {
+  type = string
+}
+
+variable "clientSecret" {
+  type = string
+}
+
+variable "subscriptionId" {
+  type = string
+}
+
+variable "tenantId" {
+  type = string
+}
