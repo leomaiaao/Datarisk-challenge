@@ -10,7 +10,6 @@ on:
 
 env:
   AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-  LOGIN_CRED: ${{  vars.LOGIN_VARS }}
 
 jobs:
   test:
@@ -172,7 +171,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.LEO_GITHUB_TOKEN }}
+          password: ${{ secrets.LEO_PASSW }}
 
       - name: Install sshpass
         run: sudo apt-get install -y sshpass
