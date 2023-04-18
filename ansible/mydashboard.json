@@ -1,0 +1,69 @@
+{
+    "title": "My Application Metrics",
+    "panels": [
+        {
+            "title": "Latency",
+            "type": "graph",
+            "targets": [
+                {
+                    "expr": "sum(rate(http_server_requests_seconds_sum{job=\"myapp\"}[1m])) / sum(rate(http_server_requests_seconds_count{job=\"myapp\"}[1m])) * 1000",
+                    "interval": "10s",
+                    "legendFormat": "Latency"
+                }
+            ],
+            "yaxes": [
+                {
+                    "label": "Latency (ms)"
+                }
+            ]
+        },
+        {
+            "title": "Error Rate",
+            "type": "graph",
+            "targets": [
+                {
+                    "expr": "sum(rate(http_server_requests_total{job=\"myapp\",status!~\"2..\"}[1m])) / sum(rate(http_server_requests_total{job=\"myapp\"}[1m]))",
+                    "interval": "10s",
+                    "legendFormat": "Error Rate"
+                }
+            ],
+            "yaxes": [
+                {
+                    "label": "Error Rate"
+                }
+            ]
+        },
+        {
+            "title": "Saturation",
+            "type": "graph",
+            "targets": [
+                {
+                    "expr": "sum(rate(http_server_requests_seconds_count{job=\"myapp\"}[1m])) / 250",
+                    "interval": "10s",
+                    "legendFormat": "Saturation"
+                }
+            ],
+            "yaxes": [
+                {
+                    "label": "Saturation"
+                }
+            ]
+        },
+        {
+            "title": "Throughput",
+            "type": "graph",
+            "targets": [
+                {
+                    "expr": "sum(rate(http_server_requests_total{job=\"myapp\"}[1m]))",
+                    "interval": "10s",
+                    "legendFormat": "Throughput"
+                }
+            ],
+            "yaxes": [
+                {
+                    "label": "Throughput"
+                }
+            ]
+        }
+    ]
+}

@@ -1,6 +1,15 @@
 ---
 - hosts: '*'
   become: true
+  roles:
+    - geerlingguy.prometheus
+  vars:
+      ds_type: prometheus
+      ds_url: http://localhost:9090
+      grafana_datasource_name: my_datasource_name
+      grafana_dashboard_name: my_dashboard_name
+      grafana_admin_user: my_admin_user
+      grafana_admin_password: my_admin_password
 
   tasks:
     - name: Update apt cache
@@ -86,17 +95,17 @@
         - grafana
 
     - name: Add Grafana datasource
-      grafana_datasource:
-        name: grafana_datasource_name
-        type: prometheus
-        url: http://localhost:9090
-        access: proxy
-        is_default: true
-        basic_auth_user: grafana_admin_user
-        basic_auth_password: grafana_admin_password
-        state: present
-      tags:
-        - grafana
+          grafana_datasource:
+            name: "{{ grafana_datasource_name }}"
+            type: "{{ ds_type }}"
+            url: "{{ ds_url }}"
+            access: proxy
+            is_default: true
+            basic_auth_user: "{{ grafana_admin_user }}"
+            basic_auth_password: "{{ grafana_admin_password }}"
+            state: present
+          tags:
+            - grafana
 
     - name: Add Grafana APT repository
       apt_repository:
@@ -121,14 +130,21 @@
       tags:
         - grafana
 
+    - name: Copy file to remote host
+      copy:
+        src: mydashboard.json
+        dest: ~/mydashboard.json
+        mode: '0644'
+      become: true
+
     - name: Add Grafana dashboard
       grafana_dashboard:
-        name: grafana_dashboard_name
-        file: /path/to/mydashboard.json
+        name: "{{ grafana_dashboard_name }}"
+        file: ~/mydashboard.json
         folder_id: 0
         overwrite: true
-        basic_auth_user: grafana_admin_user
-        basic_auth_password: grafana_admin_password
+        basic_auth_user: "{{ grafana_admin_user }}"
+        basic_auth_password: "{{ grafana_admin_password }}"
         state: present
       tags:
         - grafana
