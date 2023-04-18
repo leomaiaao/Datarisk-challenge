@@ -189,16 +189,6 @@ jobs:
           docker push ghcr.io/leomaiaao/wordpress:latest
           docker push ghcr.io/leomaiaao/mysql:latest
 
-      - name: Run Azure CLI command
-        run: |
-          az vm user update \
-            --resource-group Datarisk \
-            --name DatariskVM \
-            --username ubuntu \
-            --ssh-key-value "$(cat my-public-key.pub)"
-        env:
-          AZURE_PUBLIC_KEY: ${{ secrets.MY_PUBLIC_KEY }}
-
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y ansible
       - name: Run Ansible playbook
