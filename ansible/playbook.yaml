@@ -1,8 +1,6 @@
 ---
 - hosts: '*'
   become: true
-  roles:
-    - geerlingguy.prometheus
   vars:
       ds_type: prometheus
       ds_url: http://localhost:9090
@@ -24,6 +22,17 @@
           - curl
           - gnupg-agent
           - software-properties-common
+        state: present
+        
+    - name: Add Prometheus package repository
+      apt_repository:
+        repo: 'deb http://packages.prometheus.io/apt/prometheus {{ ansible_distribution_release }} main'
+        state: present
+        filename: prometheus
+
+    - name: Install Prometheus
+      apt:
+        name: prometheus
         state: present
 
     - name: Add Docker GPG key
