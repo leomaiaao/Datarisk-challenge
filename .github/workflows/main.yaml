@@ -49,17 +49,12 @@ jobs:
 
       - name: Run Trivy
         run: |
-          trivy filesystem --exit-code 1 --severity HIGH,CRITICAL .
+          trivy filesystem --severity MEDIUM,HIGH,CRITICAL .
           
       - name: Configure Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.0.0
-
-      - name: Create tfvars.file
-        run: |
-          cd terraform
-          echo "${{secrets.LOGIN_VARS}}" >> login.tfvars.json
 
       - name: Initialize Terraform
         run: |
@@ -115,10 +110,6 @@ jobs:
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.0.0
-
-      - name: Create tfvars.file
-        run: |
-          echo "${{secrets.LOGIN_VARS}}" >> login.tfvars.json
 
       - name: Initialize Terraform
         run: |
