@@ -7,6 +7,18 @@ terraform {
       version = "~>2.0"
     }
   }
+  backend "azurerm" {
+    storage_account_name = "tfbackenddatarisk"
+    container_name       = "tfbackenddatarisk"
+    key                  = "terraform.tfstate"
+    access_key           = "7l365ZCbht3r2cG+tDK5d9rH5oJuTBGLTTkkml7cdszDkehvvAx9nAjJsqAYuuu4Ay4b4U8JEcmh+AStT/QCQQ=="
+  }
+}
+
+resource "azurerm_management_lock" "example" {
+  name       = "terraform-lock"
+  scope      = "/subscriptions/f2e3950d-38e7-4933-b058-6b836ee39f32/resourceGroups/terraformBKED/providers/Microsoft.Storage/storageAccounts/tfbackenddatarisk"
+  lock_level = "CanNotDelete"
 }
 
 provider "azurerm" {
