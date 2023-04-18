@@ -15,7 +15,7 @@ terraform {
   }
 }
 
-resource "azurerm_management_lock" "example" {
+resource "azurerm_management_lock" "lockresource" {
   name       = "terraform-lock"
   scope      = "/subscriptions/f2e3950d-38e7-4933-b058-6b836ee39f32/resourceGroups/terraformBKED/providers/Microsoft.Storage/storageAccounts/tfbackenddatarisk"
   lock_level = "CanNotDelete"
