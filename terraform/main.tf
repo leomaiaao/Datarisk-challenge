@@ -90,6 +90,7 @@ resource "azurerm_virtual_machine" "DatariskVM" {
  os_profile {
    computer_name  = "DatariskVM"
    admin_username = var.admin_user
+   adminPassword  = var.adminPassword
  }
 
  os_profile_linux_config {
