@@ -135,7 +135,7 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           cd terraform
-          terraform apply tfplan -var-file="loginvars.tfvars"
+          terraform apply -auto-approve -var-file="loginvars.tfvars" tfplan
 
   deploy:
     name: Deploy
