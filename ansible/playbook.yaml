@@ -10,126 +10,6 @@
       grafana_admin_password: my_admin_password
 
   tasks:
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-
-    - name: Install packages
-      apt:
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - gnupg-agent
-          - software-properties-common
-          - wget
-          - tar
-        state: present
-    
-    # - name: Download Prometheus archive
-    #   get_url:
-    #     url: "https://github.com/prometheus/prometheus/releases/download/v2.34.0/prometheus-2.34.0.linux-amd64.tar.gz"
-    #     dest: /tmp/prometheus-2.34.0.linux-amd64.tar.gz
-
-    # - name: Extract Prometheus archive
-    #   become: true
-    #   unarchive:
-    #     src: /tmp/prometheus-2.34.0.linux-amd64.tar.gz
-    #     dest: /usr/local/bin/
-    #     remote_src: yes
-
-    # - name: Create Prometheus user and directories
-    #   become: true
-    #   file:
-    #     path: "{{ item }}"
-    #     state: directory
-    #     owner: prometheus
-    #     group: prometheus
-    #     mode: 0755
-    #   with_items:
-    #     - /var/lib/prometheus
-    #     - /var/log/prometheus
-    #     - /etc/prometheus
-
-    # - name: Copy Prometheus configuration
-    #   become: true
-    #   copy:
-    #     src: /path/to/prometheus.yml
-    #     dest: /etc/prometheus/prometheus.yml
-    #     owner: prometheus
-    #     group: prometheus
-    #     mode: 0644
-
-    # - name: Copy Prometheus systemd unit file
-    #   become: true
-    #   copy:
-    #     src: /path/to/prometheus.service
-    #     dest: /etc/systemd/system/prometheus.service
-    #     owner: root
-    #     group: root
-    #     mode: 0644
-
-    # - name: Reload systemd daemon
-    #   become: true
-    #   systemd:
-    #     daemon_reload: yes
-
-    # - name: Enable and start Prometheus service
-    #   become: true
-    #   systemd:
-    #     name: prometheus.service
-    #     enabled: yes
-
-    - name: Add Docker GPG key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-
-    - name: Add Docker repository
-      apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
-        state: present
-
-    - name: Install Docker
-      apt:
-        name:
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
-        state: present
-
-    - name: Install Docker Compose
-      apt:
-        name: docker-compose
-        state: present
-
-    - name: Log in to GitHub Container Registry
-      docker_login:
-        registry_url: ghcr.io
-        username: leomaiaao
-        password: "{{ LEO_GITHUB_TOKEN }}"
-
-    - name: Start Database container
-      docker_container:
-        name: mysql
-        image: ghcr.io/leomaiaao/mysql:latest
-        state: started
-        env:
-          MYSQL_ROOT_PASSWORD: somewordpress
-          MYSQL_DATABASE: wordpress
-          MYSQL_USER: wordpress
-          MYSQL_PASSWORD: wordpress
-
-    - name: Start WordPress container
-      docker_container:
-        name: wordpress
-        image: ghcr.io/leomaiaao/wordpress:latest
-        state: started
-        env:
-          WORDPRESS_DB_HOST: db:3306
-          WORDPRESS_DB_USER: wordpress
-          WORDPRESS_DB_PASSWORD: wordpress
-
     # - name: Install Grafana
     #   apt:
     #     name: "{{ item }}"
@@ -202,6 +82,126 @@
     #     state: present
     #   tags:
     #     - grafana
+
+    # - name: Download Prometheus archive
+    #   get_url:
+    #     url: "https://github.com/prometheus/prometheus/releases/download/v2.34.0/prometheus-2.34.0.linux-amd64.tar.gz"
+    #     dest: /tmp/prometheus-2.34.0.linux-amd64.tar.gz
+
+    # - name: Extract Prometheus archive
+    #   become: true
+    #   unarchive:
+    #     src: /tmp/prometheus-2.34.0.linux-amd64.tar.gz
+    #     dest: /usr/local/bin/
+    #     remote_src: yes
+
+    # - name: Create Prometheus user and directories
+    #   become: true
+    #   file:
+    #     path: "{{ item }}"
+    #     state: directory
+    #     owner: prometheus
+    #     group: prometheus
+    #     mode: 0755
+    #   with_items:
+    #     - /var/lib/prometheus
+    #     - /var/log/prometheus
+    #     - /etc/prometheus
+
+    # - name: Copy Prometheus configuration
+    #   become: true
+    #   copy:
+    #     src: /path/to/prometheus.yml
+    #     dest: /etc/prometheus/prometheus.yml
+    #     owner: prometheus
+    #     group: prometheus
+    #     mode: 0644
+
+    # - name: Copy Prometheus systemd unit file
+    #   become: true
+    #   copy:
+    #     src: /path/to/prometheus.service
+    #     dest: /etc/systemd/system/prometheus.service
+    #     owner: root
+    #     group: root
+    #     mode: 0644
+
+    # - name: Reload systemd daemon
+    #   become: true
+    #   systemd:
+    #     daemon_reload: yes
+
+    # - name: Enable and start Prometheus service
+    #   become: true
+    #   systemd:
+    #     name: prometheus.service
+    #     enabled: yes
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
+          - wget
+          - tar
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+
+    - name: Install Docker Compose
+      apt:
+        name: docker-compose
+        state: present
+
+    - name: Log in to GitHub Container Registry
+      docker_login:
+        registry_url: ghcr.io
+        username: leomaiaao
+        password: "{{ LEO_GITHUB_TOKEN }}"
+
+    - name: Start Database container
+      docker_container:
+        name: mysql
+        image: ghcr.io/leomaiaao/mysql:latest
+        state: started
+        env:
+          MYSQL_ROOT_PASSWORD: somewordpress
+          MYSQL_DATABASE: wordpress
+          MYSQL_USER: wordpress
+          MYSQL_PASSWORD: wordpress
+
+    - name: Start WordPress container
+      docker_container:
+        name: wordpress
+        image: ghcr.io/leomaiaao/wordpress:latest
+        state: started
+        env:
+          WORDPRESS_DB_HOST: db:3306
+          WORDPRESS_DB_USER: wordpress
+          WORDPRESS_DB_PASSWORD: wordpress
 
   handlers:
     - name: Restart Docker

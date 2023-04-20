@@ -29,8 +29,14 @@ Para garrantir acesso ao github packges:
 |-------------------------------|-----------------------------|
 | `YOUR_GITHUB_TOKEN` |          O seu token obtido nas configurações do github developer options 
 
+Para garrantir que o ansible se conecte a sua vm altere a seguinte informação na configuração hosts.yaml e a parte competente a ssh config no arquivo main.yml do github workflow:
+|Ansible|O que é                         |
+|-------------------------------|-----------------------------|
+| `VM PUBLIC IP` |  O IP público da sua vm configurada pela implementação terraform
 
 Depois disso é so acionar a pipeline na sessão actions e rodar a partir main ou qualquer branch que você tenha configurado. Além disso, você pode fazer qualquer mudança em uma branch específica e ao mergear o código na main ele será implementado automaticamente.
+
+> Nota: A primeira implementação falhará porque será necessário esperar a configuração da máquina virtual para a obtenção do ip de acesso público, mas as seguintes implementações serão bem-sucedidas
 
 ## O Processo de Workflow
 

@@ -28,11 +28,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ env.AZURE_CREDENTIALS }}
-
       - name: Install Infracost
         run: |
           curl https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
@@ -48,27 +43,6 @@ jobs:
       - name: Run Trivy
         run: |
           trivy filesystem --severity HIGH,CRITICAL .
-          
-      - name: Configure Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.0.0
-
-      - name: Create tfvars.file
-        run: |
-          cd terraform
-          echo '{"clientId":"${{ secrets.clientId }}","clientSecret":"${{ secrets.clientSecret }}","subscriptionId":"${{ secrets.subscriptionId }}","tenantId":"${{ secrets.tenantId }}"}' >> login.tfvars.json
-          cat login.tfvars.json
-
-      - name: Initialize Terraform
-        run: |
-          cd terraform
-          terraform init -var-file="login.tfvars.json"
-
-      - name: Plan changes
-        run: |
-          cd terraform
-          terraform plan -var-file="login.tfvars.json" -out=tfplan
 
       - name: Run Infracost
         env:
@@ -85,6 +59,27 @@ jobs:
         with:
           name: infracost-report
           path: infracost-report.json
+
+      - name: Plan changes
+        run: |
+          cd terraform
+          terraform plan -var-file="login.tfvars.json" -out=tfplan
+
+      - name: Configure Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+
+      - name: Create tfvars.file
+        run: |
+          cd terraform
+          echo '{"clientId":"${{ secrets.clientId }}","clientSecret":"${{ secrets.clientSecret }}","subscriptionId":"${{ secrets.subscriptionId }}","tenantId":"${{ secrets.tenantId }}"}' >> login.tfvars.json
+          cat login.tfvars.json
+
+      - name: Initialize Terraform
+        run: |
+          cd terraform
+          terraform init -var-file="login.tfvars.json"
 
   terraform-apply:
     name: Terraform Apply
@@ -103,12 +98,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
-      - name: Login to Azure
-        uses: azure/login@v1
-        continue-on-error: true
-        with:
-          creds: ${{ env.AZURE_CREDENTIALS }}
 
       - name: Configure Terraform
         uses: hashicorp/setup-terraform@v1
@@ -153,19 +142,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Login to Azure
-        uses: azure/login@v1
-        continue-on-error: true
-        with:
-          creds: ${{ env.AZURE_CREDENTIALS }}
-
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ghcr.io/leomaiaao/publish-packages/game
-          tags: type=sha
-
       - name: Login to GHCR
         uses: docker/login-action@v2
         with:
@@ -175,6 +151,13 @@ jobs:
 
       - name: Install sshpass
         run: sudo apt-get install -y sshpass
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/leomaiaao/publish-packages/game
+          tags: type=sha
 
       - name: Build Docker image
         run: |
