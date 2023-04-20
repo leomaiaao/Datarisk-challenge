@@ -1,4 +1,4 @@
-# DevOps Challeng
+# DevOps Challenge
 
 Olá! Esse repositório aqui contêm diversos exemplos de processos devops! A implementação compete a uma máquina virtual com um container Wordpress rodando no Azure Cloud. A configuração é garantida pela implementação IAC em Terraform e Ansible. Para permitir a confiabilidade e avaliabilidade das informações de código foi implementado um workflow em GitHub Actions
 
